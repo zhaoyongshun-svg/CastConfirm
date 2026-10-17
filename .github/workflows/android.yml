@@ -84,6 +84,11 @@ jobs:
         run: |
           printf 'android.useAndroidX=true\nandroid.nonTransitiveRClass=true\norg.gradle.jvmargs=-Xmx2048m\n' > CastConfirm/gradle.properties
 
+      - name: Fix duplicate META-INF in build.gradle
+        run: |
+          sed -i "s/'META-INF\/ASL2.0', 'META-INF\/\*.kotlin_module'/'META-INF\/ASL2.0', 'META-INF\/*.kotlin_module', 'META-INF\/beans.xml', 'META-INF\/INDEX.LIST', 'META-INF\/*.SF', 'META-INF\/*.RSA', 'META-INF\/*.DSA', 'META-INF\/ECLIPSEF.*', 'about.html'/" CastConfirm/app/build.gradle
+          grep -n "beans.xml" CastConfirm/app/build.gradle
+
       - name: Build
         run: |
           cd CastConfirm
