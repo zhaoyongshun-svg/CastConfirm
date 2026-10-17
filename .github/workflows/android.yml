@@ -19,9 +19,13 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
-
       - name: Unzip
         run: unzip -o CastConfirm-dlna-mvp.zip
+
+      # 新增这一段 ↓
+      - name: Fix gradle.properties
+        run: |
+          printf 'android.useAndroidX=true\nandroid.nonTransitiveRClass=true\norg.gradle.jvmargs=-Xmx2048m\n' > CastConfirm/gradle.properties
 
       - name: Build
         run: |
