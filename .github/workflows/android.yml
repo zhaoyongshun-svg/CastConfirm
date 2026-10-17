@@ -23,12 +23,16 @@ jobs:
       - name: Unzip
         run: unzip -o CastConfirm-dlna-mvp.zip
 
-      - name: Fetch cling from archive.org
+      - name: Fetch cling+seamless from archive.org
         run: |
           set -e
           mkdir -p localrepo/org/fourthline/cling/cling/2.1.1 \
                    localrepo/org/fourthline/cling/cling-core/2.1.1 \
-                   localrepo/org/fourthline/cling/cling-support/2.1.1
+                   localrepo/org/fourthline/cling/cling-support/2.1.1 \
+                   localrepo/org/seamless/seamless/1.1.1 \
+                   localrepo/org/seamless/seamless-util/1.1.1 \
+                   localrepo/org/seamless/seamless-http/1.1.1 \
+                   localrepo/org/seamless/seamless-xml/1.1.1
           fetch() {
             path="$1"; out="$2"
             for ts in 2022 2021 2020 2019 2018; do
@@ -43,6 +47,13 @@ jobs:
           fetch org/fourthline/cling/cling-core/2.1.1/cling-core-2.1.1.pom localrepo/org/fourthline/cling/cling-core/2.1.1/cling-core-2.1.1.pom
           fetch org/fourthline/cling/cling-support/2.1.1/cling-support-2.1.1.jar localrepo/org/fourthline/cling/cling-support/2.1.1/cling-support-2.1.1.jar
           fetch org/fourthline/cling/cling-support/2.1.1/cling-support-2.1.1.pom localrepo/org/fourthline/cling/cling-support/2.1.1/cling-support-2.1.1.pom
+          fetch org/seamless/seamless/1.1.1/seamless-1.1.1.pom localrepo/org/seamless/seamless/1.1.1/seamless-1.1.1.pom
+          fetch org/seamless/seamless-util/1.1.1/seamless-util-1.1.1.jar localrepo/org/seamless/seamless-util/1.1.1/seamless-util-1.1.1.jar
+          fetch org/seamless/seamless-util/1.1.1/seamless-util-1.1.1.pom localrepo/org/seamless/seamless-util/1.1.1/seamless-util-1.1.1.pom
+          fetch org/seamless/seamless-http/1.1.1/seamless-http-1.1.1.jar localrepo/org/seamless/seamless-http/1.1.1/seamless-http-1.1.1.jar
+          fetch org/seamless/seamless-http/1.1.1/seamless-http-1.1.1.pom localrepo/org/seamless/seamless-http/1.1.1/seamless-http-1.1.1.pom
+          fetch org/seamless/seamless-xml/1.1.1/seamless-xml-1.1.1.jar localrepo/org/seamless/seamless-xml/1.1.1/seamless-xml-1.1.1.jar
+          fetch org/seamless/seamless-xml/1.1.1/seamless-xml-1.1.1.pom localrepo/org/seamless/seamless-xml/1.1.1/seamless-xml-1.1.1.pom
 
       - name: Fix settings.gradle
         run: |
