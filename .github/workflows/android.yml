@@ -19,10 +19,52 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
+
       - name: Unzip
         run: unzip -o CastConfirm-dlna-mvp.zip
 
-      # 新增这一段 ↓
+      - name: Fetch cling from archive.org
+        run: |
+          set -e
+          mkdir -p localrepo/org/fourthline/cling/cling/2.1.1 \
+                   localrepo/org/fourthline/cling/cling-core/2.1.1 \
+                   localrepo/org/fourthline/cling/cling-support/2.1.1
+          fetch() {
+            path="$1"; out="$2"
+            for ts in 2022 2021 2020 2019 2018; do
+              if curl -fsSL --retry 2 -o "$out" "https://web.archive.org/web/${ts}id_/https://4thline.org/m2/${path}"; then
+                echo "OK  $path"; return 0
+              fi
+            done
+            echo "FAILED $path"; return 1
+          }
+          fetch org/fourthline/cling/cling/2.1.1/cling-2.1.1.pom localrepo/org/fourthline/cling/cling/2.1.1/cling-2.1.1.pom
+          fetch org/fourthline/cling/cling-core/2.1.1/cling-core-2.1.1.jar localrepo/org/fourthline/cling/cling-core/2.1.1/cling-core-2.1.1.jar
+          fetch org/fourthline/cling/cling-core/2.1.1/cling-core-2.1.1.pom localrepo/org/fourthline/cling/cling-core/2.1.1/cling-core-2.1.1.pom
+          fetch org/fourthline/cling/cling-support/2.1.1/cling-support-2.1.1.jar localrepo/org/fourthline/cling/cling-support/2.1.1/cling-support-2.1.1.jar
+          fetch org/fourthline/cling/cling-support/2.1.1/cling-support-2.1.1.pom localrepo/org/fourthline/cling/cling-support/2.1.1/cling-support-2.1.1.pom
+
+      - name: Fix settings.gradle
+        run: |
+          cat > CastConfirm/settings.gradle <<'EOF'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url uri("$rootDir/../localrepo") }
+    }
+}
+rootProject.name = 'CastConfirm'
+include ':app'
+EOF
+
       - name: Fix gradle.properties
         run: |
           printf 'android.useAndroidX=true\nandroid.nonTransitiveRClass=true\norg.gradle.jvmargs=-Xmx2048m\n' > CastConfirm/gradle.properties
